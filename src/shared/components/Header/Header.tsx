@@ -1,19 +1,53 @@
-import React from 'react';
-import {Layout, Button} from 'antd';
+import React, {useContext} from 'react';
+import {Layout, Button, Typography} from 'antd';
 import './styles.scss';
-import {Link} from 'react-router-dom';
+import {Link, useLocation, useHistory} from 'react-router-dom';
+import {UserContext} from '../../../App';
+
+const {Text} = Typography;
 
 const Header = () => {
+  const location = useLocation();
+  const history = useHistory();
+  const [user, changeUser] = useContext(UserContext);
+
+  const logout = () => {
+    changeUser(null);
+    history.push('/');
+  };
+
   return (
     <Layout.Header className="header">
       <Link to="/" className="header__logo">
         LiveDune
       </Link>
-      <div className="header__register register">
-        <Button type="primary" shape="round" size="large">
-          Регистрация
+      {user ? (
+        <Button type="link" onClick={logout}>
+          Выйти
         </Button>
-      </div>
+      ) : (
+        <>
+          {location.pathname === '/register' ? (
+            <div className="header__button">
+              <Text className="mr-1">Уже есть аккаунт?</Text>
+              <Link to="/login">
+                <Button type="primary" shape="round" size="large">
+                  Войти
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="header__button">
+              <Text className="mr-1">У вас нет аккаунта?</Text>
+              <Link to="/register">
+                <Button type="primary" shape="round" size="large">
+                  Регистрация
+                </Button>
+              </Link>
+            </div>
+          )}
+        </>
+      )}
     </Layout.Header>
   );
 };
